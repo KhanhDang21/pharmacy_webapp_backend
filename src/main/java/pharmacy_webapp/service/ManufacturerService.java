@@ -2,6 +2,7 @@ package pharmacy_webapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pharmacy_webapp.dto.ManufacturerDto;
 import pharmacy_webapp.model.Manufacturer;
 import pharmacy_webapp.repository.ManufacturerRepository;
 
@@ -12,7 +13,12 @@ public class ManufacturerService {
     @Autowired
     ManufacturerRepository manufacturerRepository;
 
-    public Manufacturer createManufacturer(Manufacturer manufacturer) {
+    public Manufacturer createManufacturer(ManufacturerDto manufacturerDto) {
+
+        Manufacturer manufacturer = new Manufacturer();
+        manufacturer.setName(manufacturerDto.getName());
+        manufacturer.setDescription(manufacturerDto.getDescription());
+
         return manufacturerRepository.save(manufacturer);
     }
 
@@ -21,15 +27,22 @@ public class ManufacturerService {
     }
 
     public Manufacturer getManufacturerById(String manufacturerId) {
-        return manufacturerRepository.findById(manufacturerId).get();
+        return manufacturerRepository.findById(manufacturerId)
+                .orElseThrow(() -> new RuntimeException("Manufacturer not found"));
     }
 
-    public Manufacturer updateManufacturer(Manufacturer manufacturer) {
-        Manufacturer manufacturerUpdated = new Manufacturer();
-        manufacturerUpdated.setName(manufacturer.getName());
-        manufacturerUpdated.setDescription(manufacturer.getDescription());
+    public Manufacturer updateManufacturer(String manufacturerId, ManufacturerDto manufacturerDto) {
 
-        return manufacturerRepository.save(manufacturerUpdated);
+        Manufacturer manufacturer = getManufacturerById(manufacturerId);
+
+        if(manufacturer == null){
+            throw new RuntimeException("Manufacturer not found");
+        }
+
+        manufacturer.setName(manufacturerDto.getName());
+        manufacturer.setDescription(manufacturerDto.getDescription());
+
+        return manufacturerRepository.save(manufacturer);
     }
 
     public String deleteManufacturer(String manufacturerId) {

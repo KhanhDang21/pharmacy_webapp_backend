@@ -76,7 +76,7 @@ public class ShippingAddressController {
         }
     }
 
-    @PutMapping("/update/{shippingAddressId}")
+    @PutMapping("/{shippingAddressId}")
     public ResponseEntity<ApiResponse<ShippingAddress>> updateShippingAddress(@PathVariable String shippingAddressId, @RequestBody ShippingAddressDto shippingAddress) {
         try{
             ShippingAddress shippingAdd = shippingAddressService.getShippingAddressById(shippingAddressId);

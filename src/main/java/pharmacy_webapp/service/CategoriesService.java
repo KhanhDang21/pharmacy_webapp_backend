@@ -29,5 +29,27 @@ public class CategoriesService {
         return categoriesRepository.findAll();
     }
 
-    
+    public Categories updateCategories(String categoriesId, CategoriesDto categoriesDto) {
+
+        Categories categories = getCategories(categoriesId);
+
+        if(categories == null) {
+            throw new RuntimeException("categories not found");
+        }
+
+        categories.setName(categoriesDto.getName());
+        categories.setDescription(categoriesDto.getDescription());
+        return categoriesRepository.save(categories);
+    }
+
+    public String deleteCategories(String categoriesId) {
+        Categories categories = getCategories(categoriesId);
+
+        if (categories == null) {
+            throw new RuntimeException("categories not found");
+        }
+
+        categoriesRepository.delete(categories);
+        return "Categories deleted";
+    }
 }

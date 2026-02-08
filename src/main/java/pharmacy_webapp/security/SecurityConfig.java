@@ -37,7 +37,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api-docs/swagger-config",
                                 "/api-docs/**",
-
+                                //
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
@@ -57,9 +57,8 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
 
                         // ***
-                        .anyRequest().authenticated()
-
-
+                        //.anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
