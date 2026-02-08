@@ -12,7 +12,6 @@ import pharmacy_webapp.repository.UserRepository;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
 
 @Service
 public class AuthService {
