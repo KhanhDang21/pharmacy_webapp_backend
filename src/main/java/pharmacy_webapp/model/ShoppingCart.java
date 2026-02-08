@@ -5,12 +5,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Document(collection = "shopping_cart")
 public class ShoppingCart {
     @Id
     private String id;
@@ -18,5 +22,5 @@ public class ShoppingCart {
     @DBRef
     private User user;
 
-    private ArrayList<CartItem> items = new ArrayList<>();
+    private HashMap<String, Integer> items = new HashMap<>();
 }

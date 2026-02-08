@@ -3,10 +3,7 @@ package pharmacy_webapp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pharmacy_webapp.dto.ApiResponse;
 import pharmacy_webapp.model.ShoppingCart;
 import pharmacy_webapp.model.UserPrincipal;
@@ -53,4 +50,76 @@ public class ShoppingCartController {
             );
         }
     }
+
+   @PutMapping("/add-product-to-shopping-cart")
+    public ResponseEntity<ApiResponse<ShoppingCart>> addProductToShoppingCart(Authentication authentication, String productId){
+        try{
+            UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
+            String userId = user.getUserId();
+
+            ShoppingCart shoppingCart = shoppingCartService.addProductToShoppingCart(userId, productId);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success("Add product successfully", shoppingCart)
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(e.getMessage())
+            );
+        }
+   }
+
+   @PutMapping("/decrease-product-from-shopping-cart")
+    public ResponseEntity<ApiResponse<ShoppingCart>> decreaseProductFromShoppingCart(Authentication authentication, String productId){
+        try{
+            UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
+            String userId = user.getUserId();
+
+            ShoppingCart shoppingCart = shoppingCartService.decreaseProductFromShoppingCart(userId, productId);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success("Decrease product successfully", shoppingCart)
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(e.getMessage())
+            );
+        }
+   }
+
+   @PutMapping("/remove-product-from-shopping-cart")
+    public ResponseEntity<ApiResponse<ShoppingCart>> removeProductFromShoppingCart(Authentication authentication, String productId){
+        try{
+            UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
+            String userId = user.getUserId();
+
+            ShoppingCart shoppingCart = shoppingCartService.removeProductFromShoppingCart(userId, productId);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success("Remove product successfully", shoppingCart)
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(e.getMessage())
+            );
+        }
+   }
+
+   @PutMapping("/clear-shopping-cart")
+    public ResponseEntity<ApiResponse<ShoppingCart>> clearShoppingCart(Authentication authentication){
+        try{
+            UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
+            String userId = user.getUserId();
+
+            ShoppingCart shoppingCart = shoppingCartService.clearShoppingCart(userId);
+
+            return ResponseEntity.ok(
+                    ApiResponse.success("Clear shopping cart successfully", shoppingCart)
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(e.getMessage())
+            );
+        }
+   }
 }
