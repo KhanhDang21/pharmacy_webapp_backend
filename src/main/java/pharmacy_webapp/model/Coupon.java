@@ -16,8 +16,8 @@ public class Coupon {
 
     private String name;
     private String description;
-    private String discountValue;
+    private double discountValue;
     private int quantity;
-    private Date endTime;
-    private int typeCoupon;
+    private String endTime;
+//    private int typeCoupon;
 }
