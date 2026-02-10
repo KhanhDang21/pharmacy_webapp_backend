@@ -1,5 +1,7 @@
 package pharmacy_webapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,8 +21,14 @@ public class ShoppingCart {
     @Id
     private String id;
 
-    @DBRef
+    @DBRef(lazy = true)
+    @JsonIgnore
     private User user;
+
+    @JsonProperty("userId")
+    public String getUserId() {
+        return user != null ? user.getId() : null;
+    }
 
     private HashMap<String, Integer> items = new HashMap<>();
 }
