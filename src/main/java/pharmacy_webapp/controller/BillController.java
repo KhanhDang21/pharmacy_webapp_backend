@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.*;
 import pharmacy_webapp.dto.ApiResponse;
 import pharmacy_webapp.dto.BuyNowRequest;
 import pharmacy_webapp.dto.CheckoutRequest;
+import pharmacy_webapp.dto.PaymentUrlResponse;
 import pharmacy_webapp.model.Bill;
 import pharmacy_webapp.model.UserPrincipal;
 import pharmacy_webapp.service.BillService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -20,18 +22,19 @@ public class BillController {
     private BillService billService;
 
     @PostMapping("/check-out")
-    public ResponseEntity<ApiResponse<Bill>> checkOutFromShoppingCart(
+    public ResponseEntity<ApiResponse<PaymentUrlResponse>> checkOutFromShoppingCart(
             Authentication authentication,
-            @RequestBody CheckoutRequest checkoutRequest
+            @RequestBody CheckoutRequest checkoutRequest,
+            HttpServletRequest request
     ){
         try{
             UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
             String userId = user.getUserId();
 
-            Bill bill = billService.checkOutFromShoppingCart(userId, checkoutRequest);
+            PaymentUrlResponse response = billService.checkOutFromShoppingCart(userId, checkoutRequest, request);
 
             return ResponseEntity.ok(
-                    ApiResponse.success("Order successfully", bill)
+                    ApiResponse.success("Order created successfully", response)
             );
         }catch (Exception e){
             return ResponseEntity.badRequest().body(
@@ -41,18 +44,19 @@ public class BillController {
     }
 
     @PostMapping("/buy-now")
-    public ResponseEntity<ApiResponse<Bill>> buyNow(
+    public ResponseEntity<ApiResponse<PaymentUrlResponse>> buyNow(
             Authentication authentication,
-            @RequestBody BuyNowRequest buyNowRequest
+            @RequestBody BuyNowRequest buyNowRequest,
+            HttpServletRequest request
     ){
         try{
             UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
             String userId = user.getUserId();
 
-            Bill bill = billService.buyNow(userId, buyNowRequest);
+            PaymentUrlResponse response = billService.buyNow(userId, buyNowRequest, request);
 
             return ResponseEntity.ok(
-                    ApiResponse.success("Order successfully", bill)
+                    ApiResponse.success("Order created successfully", response)
             );
         }catch (Exception e){
             return ResponseEntity.badRequest().body(
@@ -119,7 +123,7 @@ public class BillController {
     @PutMapping("/{billId}/update-payment-status")
     public ResponseEntity<ApiResponse<Bill>> updatePaymentStatus(
             @PathVariable String billId,
-            Integer paymentStatus
+            @RequestParam Integer paymentStatus
     ){
         try{
             Bill bill = billService.updatePaymentStatus(billId, paymentStatus);
@@ -137,7 +141,7 @@ public class BillController {
     @PutMapping("/{billId}/update-order-status")
     public ResponseEntity<ApiResponse<Bill>> updateOrderStatus(
             @PathVariable String billId,
-            Integer orderStatus
+            @RequestParam Integer orderStatus
     ){
         try{
             Bill bill = billService.updateOrderStatus(billId, orderStatus);

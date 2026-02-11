@@ -7,14 +7,17 @@ import pharmacy_webapp.constants.PaymentMethodConstants;
 import pharmacy_webapp.constants.PaymentStatusConstants;
 import pharmacy_webapp.dto.BuyNowRequest;
 import pharmacy_webapp.dto.CheckoutRequest;
+import pharmacy_webapp.dto.PaymentUrlResponse;
 import pharmacy_webapp.model.*;
 import pharmacy_webapp.repository.BillRepository;
 import pharmacy_webapp.repository.ProductRepository;
 import pharmacy_webapp.repository.ShoppingCartRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class BillService {
@@ -38,6 +41,9 @@ public class BillService {
 
     @Autowired
     private ShoppingCartService shoppingCartService;
+
+    @Autowired
+    private VNPayService vnPayService;
 
     private double caculateTotalAmount(HashMap<String, Integer> products){
         double total = 0;
@@ -80,7 +86,49 @@ public class BillService {
         }
     }
 
-    public Bill checkOutFromShoppingCart(String userId, CheckoutRequest checkoutRequest) {
+    private String getIpAddress(HttpServletRequest request) {
+        String ipAddress = request.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null || ipAddress.isEmpty()) {
+            ipAddress = request.getRemoteAddr();
+        }
+        return ipAddress;
+    }
+
+    public Bill handleVNPayCallback(Map<String, String> params) {
+        try {
+            if (!vnPayService.verifyPaymentCallback(params)) {
+                throw new RuntimeException("Invalid VNPay signature");
+            }
+
+            String billId = params.get("vnp_TxnRef");
+            String responseCode = params.get("vnp_ResponseCode");
+
+            Bill bill = getBillById(billId);
+
+            if ("00".equals(responseCode)) {
+                bill.setPaymentStatus(PaymentStatusConstants.PAID);
+                bill.setOderStatus(OrderStatusConstants.CONFIRMED);
+                bill.setPaidAt(LocalDateTime.now());
+
+                System.out.println("VNPay payment SUCCESS for bill: " + billId);
+            } else {
+                bill.setPaymentStatus(PaymentStatusConstants.FAILED);
+                restoreProductStock(bill.getProducts());
+
+                System.out.println("VNPay payment FAILED for bill: " + billId + ", code: " + responseCode);
+            }
+
+            bill.setUpdatedAt(LocalDateTime.now());
+            return billRepository.save(bill);
+
+        } catch (Exception e) {
+            System.err.println("ERROR in handleVNPayCallback: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("VNPay callback handling error: " + e.getMessage());
+        }
+    }
+
+    public PaymentUrlResponse checkOutFromShoppingCart(String userId, CheckoutRequest checkoutRequest, HttpServletRequest request) {
         User user = userService.getUserById(userId);
         if (user == null) {
             throw new RuntimeException("User not found");
@@ -96,12 +144,12 @@ public class BillService {
         }
 
         ShippingAddress shippingAddress = shippingAddressService.getShippingAddressById(checkoutRequest.getShippingAddressId());
-
         if(shippingAddress == null) {
             throw new RuntimeException("Shipping address not found");
         }
 
         HashMap<String, Integer> products = new HashMap<>(shoppingCart.getItems());
+        validateProducts(products);
 
         double totalAmount = caculateTotalAmount(products);
 
@@ -124,10 +172,27 @@ public class BillService {
 
         updateProductStock(products);
 
-        return savedBill;
+        String paymentUrl = null;
+
+        if (checkoutRequest.getPaymentMethod().equals(PaymentMethodConstants.VNPAY)) {
+            String ipAddress = getIpAddress(request);
+            paymentUrl = vnPayService.createPaymentUrl(
+                    savedBill.getId(),
+                    (long) totalAmount,
+                    "Pay for the order " + savedBill.getId(),
+                    ipAddress
+            );
+        }
+
+        PaymentUrlResponse response = new PaymentUrlResponse();
+        response.setBillId(savedBill.getId());
+        response.setPaymentUrl(paymentUrl);
+        response.setTotalAmount(totalAmount);
+
+        return response;
     }
 
-    public Bill buyNow(String userId, BuyNowRequest buyNowRequest){
+    public PaymentUrlResponse buyNow(String userId, BuyNowRequest buyNowRequest, HttpServletRequest request){
         User user = userService.getUserById(userId);
         if(user == null) {
             throw new RuntimeException("User not found");
@@ -158,7 +223,24 @@ public class BillService {
 
         updateProductStock(buyNowRequest.getProducts());
 
-        return savedBill;
+        String paymentUrl = null;
+
+        if (buyNowRequest.getPaymentMethod().equals(PaymentMethodConstants.VNPAY)) {
+            String ipAddress = getIpAddress(request);
+            paymentUrl = vnPayService.createPaymentUrl(
+                    savedBill.getId(),
+                    (long) totalAmount,
+                    "Pay for the order " + savedBill.getId(),
+                    ipAddress
+            );
+        }
+
+        PaymentUrlResponse response = new PaymentUrlResponse();
+        response.setBillId(savedBill.getId());
+        response.setPaymentUrl(paymentUrl);
+        response.setTotalAmount(totalAmount);
+
+        return response;
     }
 
     public List<Bill> getUserBills(String userId) {
@@ -180,8 +262,8 @@ public class BillService {
         }
 
         if(bill.getOderStatus() != OrderStatusConstants.PENDING &&
-        bill.getOderStatus() != OrderStatusConstants.CONFIRMED) {
-            throw new RuntimeException("You can not cancel this bill because" +
+                bill.getOderStatus() != OrderStatusConstants.CONFIRMED) {
+            throw new RuntimeException("You can not cancel this bill because " +
                     OrderStatusConstants.getDescription(bill.getOderStatus()));
         }
 
