@@ -13,5 +13,6 @@ public class Categories {
     private String id;
 
     private String name;
+    private String slug;
     private String description;
 }

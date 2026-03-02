@@ -6,16 +6,49 @@ import pharmacy_webapp.dto.CategoriesDto;
 import pharmacy_webapp.model.Categories;
 import pharmacy_webapp.repository.CategoriesRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import java.text.Normalizer;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 @Service
 public class CategoriesService {
     @Autowired
     private CategoriesRepository categoriesRepository;
 
+    public static String toSlug(String input) {
+        if (input == null || input.isEmpty()) return "";
+
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        String noAccent = pattern.matcher(normalized).replaceAll("");
+
+        noAccent = noAccent.replaceAll("đ", "d").replaceAll("Đ", "d");
+
+        noAccent = noAccent.toLowerCase(Locale.ROOT);
+
+        noAccent = noAccent.replaceAll("\\s+", "-");
+
+        noAccent = noAccent.replaceAll("[^a-z0-9-]", "");
+
+        noAccent = noAccent.replaceAll("-{2,}", "-");
+
+        noAccent = noAccent.replaceAll("^-|-$", "");
+
+        return noAccent;
+    }
+
     public Categories createCategories(CategoriesDto categoriesDto) {
         Categories categories = new Categories();
         categories.setName(categoriesDto.getName());
+
+        String slugCategories = toSlug(categoriesDto.getName());
+        categories.setSlug(slugCategories);
+
         categories.setDescription(categoriesDto.getDescription());
         return categoriesRepository.save(categories);
     }
