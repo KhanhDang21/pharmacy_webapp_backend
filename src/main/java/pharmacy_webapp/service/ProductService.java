@@ -66,15 +66,13 @@ public class ProductService {
     public Product updateProduct(String productId, ProductDto productDto, List<MultipartFile> images) throws IOException {
         Product product = getProductById(productId);
 
-        if(productDto.getManufacturerId() != null &&
-                !productDto.getManufacturerId().equals(product.getManufacturer().getId())) {
+        if(productDto.getManufacturerId() != null) {
             Manufacturer manufacturer = manufacturerRepository.findById(productDto.getManufacturerId())
                     .orElseThrow(() -> new RuntimeException("Manufacturer not found"));
             product.setManufacturer(manufacturer);
         }
 
-        if (productDto.getCategoriesId() != null &&
-                !productDto.getCategoriesId().equals(product.getCategories().getId())) {
+        if (productDto.getCategoriesId() != null) {
             Categories categories = categoriesRepository.findById(productDto.getCategoriesId())
                     .orElseThrow(() -> new RuntimeException("Categories not found"));
             product.setCategories(categories);
