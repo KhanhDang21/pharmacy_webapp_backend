@@ -97,7 +97,7 @@ public class UserController {
     }
 
     // for admin
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/")
     public ResponseEntity<ApiResponse<List<User>>> getAllUsers() {
         try{
