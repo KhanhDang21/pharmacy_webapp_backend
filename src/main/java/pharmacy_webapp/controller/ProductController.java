@@ -27,6 +27,7 @@ public class ProductController {
             @RequestParam String name,
             @RequestParam String description,
             @RequestParam double price,
+            @RequestParam int percentDiscount,
             @RequestParam int quantity,
             @RequestParam(defaultValue = "0") int purchaseCount,
             @RequestPart(value = "image", required = false)List<MultipartFile> images
@@ -34,7 +35,7 @@ public class ProductController {
         try{
             ProductDto productDto = new ProductDto(
                     manufacturerId, categoriesId, name, description,
-                    price, quantity, purchaseCount
+                    price, percentDiscount, quantity, purchaseCount
             );
 
             Product product = productService.createProduct(productDto, images);
@@ -89,6 +90,7 @@ public class ProductController {
             @RequestParam String name,
             @RequestParam String description,
             @RequestParam double price,
+            @RequestParam int percentDiscount,
             @RequestParam int quantity,
             @RequestParam(defaultValue = "0") int purchaseCount,
             @RequestPart(value = "image", required = false)List<MultipartFile> images
@@ -100,6 +102,7 @@ public class ProductController {
                     name,
                     description,
                     price,
+                    percentDiscount,
                     quantity,
                     purchaseCount
             );

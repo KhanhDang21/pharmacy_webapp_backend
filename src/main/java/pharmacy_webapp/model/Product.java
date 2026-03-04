@@ -26,5 +26,6 @@ public class Product {
     private List<String> urlImages;
     private int quantity;
     private double price;
+    private int percentDiscount;
     private int purchaseCount;
 }
