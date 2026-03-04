@@ -2,10 +2,12 @@ package pharmacy_webapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import pharmacy_webapp.dto.CategoriesDto;
 import pharmacy_webapp.model.Categories;
 import pharmacy_webapp.repository.CategoriesRepository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -18,6 +20,9 @@ import java.util.regex.Pattern;
 public class CategoriesService {
     @Autowired
     private CategoriesRepository categoriesRepository;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     public static String toSlug(String input) {
         if (input == null || input.isEmpty()) return "";
@@ -42,14 +47,20 @@ public class CategoriesService {
         return noAccent;
     }
 
-    public Categories createCategories(CategoriesDto categoriesDto) {
+    public Categories createCategories(CategoriesDto categoriesDto, MultipartFile image) throws IOException {
+        String urlImage = "";
+        if(image != null && !image.isEmpty()) {
+            urlImage = cloudinaryService.uploadImage(image);
+        }
+
         Categories categories = new Categories();
         categories.setName(categoriesDto.getName());
 
         String slugCategories = toSlug(categoriesDto.getName());
         categories.setSlug(slugCategories);
-
+        categories.setUrlImg(urlImage);
         categories.setDescription(categoriesDto.getDescription());
+
         return categoriesRepository.save(categories);
     }
 

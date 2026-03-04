@@ -243,6 +243,10 @@ public class BillService {
         return response;
     }
 
+    public List<Bill> getAllBill(){
+        return billRepository.findAll();
+    }
+
     public List<Bill> getUserBills(String userId) {
         List<Bill> bills = billRepository.findByUser_Id(userId);
         return bills;

@@ -65,6 +65,21 @@ public class BillController {
         }
     }
 
+    @GetMapping("/get-all-bill")
+    public ResponseEntity<ApiResponse<List<Bill>>> getAllBill(){
+        try{
+            List<Bill> bills = billService.getAllBill();
+
+            return ResponseEntity.ok(
+                    ApiResponse.success("Get all bill successfully", bills)
+            );
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.error(e.getMessage())
+            );
+        }
+    }
+
     @GetMapping("/my-orders")
     public ResponseEntity<ApiResponse<List<Bill>>> getMyOrders(
             Authentication authentication

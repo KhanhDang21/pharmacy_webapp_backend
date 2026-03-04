@@ -1,8 +1,10 @@
 package pharmacy_webapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pharmacy_webapp.dto.ApiResponse;
 import pharmacy_webapp.dto.CategoriesDto;
 import pharmacy_webapp.model.Categories;
@@ -16,10 +18,18 @@ public class CategoriesController {
     @Autowired
     private CategoriesService categoriesService;
 
-    @PostMapping("/create-categories")
-    public ResponseEntity<ApiResponse<Categories>> createCategories(@RequestBody CategoriesDto categories) {
+    @PostMapping(value = "/create-categories", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Categories>> createCategories(
+            @RequestParam String name,
+            @RequestParam String description,
+            @RequestPart(value = "image", required = false) MultipartFile image
+    ) {
         try{
-            Categories categoriesRes = categoriesService.createCategories(categories);
+            CategoriesDto categoriesDto = new CategoriesDto(
+                    name, description
+            );
+
+            Categories categoriesRes = categoriesService.createCategories(categoriesDto, image);
 
             return ResponseEntity.ok(
                     ApiResponse.success("Create categories successfully ", categoriesRes)

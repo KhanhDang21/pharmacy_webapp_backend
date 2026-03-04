@@ -14,5 +14,6 @@ public class Categories {
 
     private String name;
     private String slug;
+    private String urlImg;
     private String description;
 }
