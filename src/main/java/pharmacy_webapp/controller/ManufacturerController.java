@@ -2,8 +2,10 @@ package pharmacy_webapp.controller;
 
 import com.cloudinary.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pharmacy_webapp.dto.ApiResponse;
 import pharmacy_webapp.dto.ManufacturerDto;
 import pharmacy_webapp.model.Manufacturer;
@@ -17,10 +19,17 @@ public class ManufacturerController {
     @Autowired
     ManufacturerService manufacturerService;
 
-    @PostMapping("/create-manufacturer")
-    public ResponseEntity<ApiResponse<Manufacturer>> createManufacturer(@RequestBody ManufacturerDto manufacturerDto) {
+    @PostMapping(value = "/create-manufacturer", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Manufacturer>> createManufacturer(
+            @RequestParam String name,
+            @RequestParam String description,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
         try{
-            Manufacturer manufacturer = manufacturerService.createManufacturer(manufacturerDto);
+            ManufacturerDto manufacturerDto = new ManufacturerDto(
+                    name, description
+            );
+
+            Manufacturer manufacturer = manufacturerService.createManufacturer(manufacturerDto, image);
 
             return ResponseEntity.ok(
                     ApiResponse.success("Create manufacturer successfully", manufacturer)
@@ -62,10 +71,18 @@ public class ManufacturerController {
         }
     }
 
-    @PutMapping("/{manufacturerId}")
-    public ResponseEntity<ApiResponse<Manufacturer>> updateManufacturer(@PathVariable String manufacturerId,@RequestBody ManufacturerDto manufacturerDto) {
+    @PutMapping(value = "/{manufacturerId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Manufacturer>> updateManufacturer(
+            @PathVariable String manufacturerId,
+            @RequestParam String name,
+            @RequestParam String description,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
         try{
-            Manufacturer manufacturer = manufacturerService.updateManufacturer(manufacturerId, manufacturerDto);
+            ManufacturerDto manufacturerDto = new ManufacturerDto(
+                    name, description
+            );
+
+            Manufacturer manufacturer = manufacturerService.updateManufacturer(manufacturerId, manufacturerDto, image);
 
             return ResponseEntity.ok(
                     ApiResponse.success("Update manufacturer successfully", manufacturer)

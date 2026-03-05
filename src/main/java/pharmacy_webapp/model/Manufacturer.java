@@ -13,5 +13,6 @@ public class Manufacturer {
     private String id;
 
     private String name;
+    private String urlImage;
     private String description;
 }

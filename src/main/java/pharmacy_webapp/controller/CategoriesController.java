@@ -18,18 +18,10 @@ public class CategoriesController {
     @Autowired
     private CategoriesService categoriesService;
 
-    @PostMapping(value = "/create-categories", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<Categories>> createCategories(
-            @RequestParam String name,
-            @RequestParam String description,
-            @RequestPart(value = "image", required = false) MultipartFile image
-    ) {
+    @PostMapping("/create-categories")
+    public ResponseEntity<ApiResponse<Categories>> createCategories(@RequestBody CategoriesDto categoriesDto) {
         try{
-            CategoriesDto categoriesDto = new CategoriesDto(
-                    name, description
-            );
-
-            Categories categoriesRes = categoriesService.createCategories(categoriesDto, image);
+            Categories categoriesRes = categoriesService.createCategories(categoriesDto);
 
             return ResponseEntity.ok(
                     ApiResponse.success("Create categories successfully ", categoriesRes)

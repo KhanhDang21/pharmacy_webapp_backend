@@ -47,18 +47,12 @@ public class CategoriesService {
         return noAccent;
     }
 
-    public Categories createCategories(CategoriesDto categoriesDto, MultipartFile image) throws IOException {
-        String urlImage = "";
-        if(image != null && !image.isEmpty()) {
-            urlImage = cloudinaryService.uploadImage(image);
-        }
-
+    public Categories createCategories(CategoriesDto categoriesDto){
         Categories categories = new Categories();
         categories.setName(categoriesDto.getName());
 
         String slugCategories = toSlug(categoriesDto.getName());
         categories.setSlug(slugCategories);
-        categories.setUrlImg(urlImage);
         categories.setDescription(categoriesDto.getDescription());
 
         return categoriesRepository.save(categories);
