@@ -50,7 +50,9 @@ public class ManufacturerService {
 
         String urlImage = "";
         if(image != null && !image.isEmpty()) {
-            cloudinaryService.deleteImage(manufacturer.getUrlImage());
+            if(manufacturer.getUrlImage() != null) {
+                cloudinaryService.deleteImage(manufacturer.getUrlImage());
+            }
             urlImage = cloudinaryService.uploadImage(image);
         }
 
