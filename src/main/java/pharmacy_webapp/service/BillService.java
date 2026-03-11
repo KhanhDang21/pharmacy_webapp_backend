@@ -87,10 +87,15 @@ public class BillService {
     }
 
     private String getIpAddress(HttpServletRequest request) {
-        String ipAddress = request.getHeader("X-FORWARDED-FOR");
-        if (ipAddress == null || ipAddress.isEmpty()) {
+
+        String ipAddress = request.getHeader("X-Forwarded-For");
+
+        if (ipAddress != null && !ipAddress.isEmpty()) {
+            ipAddress = ipAddress.split(",")[0];
+        } else {
             ipAddress = request.getRemoteAddr();
         }
+
         return ipAddress;
     }
 
