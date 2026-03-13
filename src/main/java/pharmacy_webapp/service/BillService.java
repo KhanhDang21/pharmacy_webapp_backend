@@ -49,7 +49,7 @@ public class BillService {
         double total = 0;
         for(HashMap.Entry<String, Integer> entry : products.entrySet()){
             Product product = productService.getProductById(entry.getKey());
-            total += product.getPrice() * entry.getValue();
+            total += (((product.getPrice() * (100 - product.getPercentDiscount())) / 100) * entry.getValue());
         }
         return total;
     }
