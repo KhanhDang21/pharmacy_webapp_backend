@@ -81,9 +81,9 @@ public class UserController {
             UserProfileDto userProfileDtoUpdated = new UserProfileDto(
                     user.getFullName(),
                     user.getEmail(),
-                    user.getBirthDate(),
                     user.getPhoneNumber(),
-                    user.getGender()
+                    user.getGender(),
+                    user.getBirthDate()
             );
 
             return ResponseEntity.ok(
