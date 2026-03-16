@@ -31,9 +31,9 @@ public class UserController {
             UserProfileDto userProfileDto = new UserProfileDto(
                     user.getFullName(),
                     user.getEmail(),
-                    user.getBirthDate(),
                     user.getPhoneNumber(),
-                    user.getGender()
+                    user.getGender(),
+                    user.getBirthDate()
             );
 
             return ResponseEntity.ok(
@@ -56,8 +56,8 @@ public class UserController {
                     user.getFullName(),
                     user.getEmail(),
                     user.getPhoneNumber(),
-                    user.getBirthDate(),
-                    user.getGender()
+                    user.getGender(),
+                    user.getBirthDate()
             );
 
             return ResponseEntity.ok(
