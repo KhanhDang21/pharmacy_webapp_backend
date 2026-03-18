@@ -22,7 +22,7 @@ public class ChatbotService {
             .build();
 
     private final Map<String, List<Map<String, Object>>> sessionHistories = new ConcurrentHashMap<>();
-    private static final int MAX_HISTORY_TURNS = 10;
+    private static final int MAX_HISTORY_TURNS = 100;
 
     public String chat(String sessionId, String message) throws Exception {
         String url = config.getApiUrl() + config.getModel() + ":generateContent?key=" + config.getApiKey();
