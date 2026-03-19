@@ -293,9 +293,15 @@ public class BillService {
         bill.setPaymentStatus(paymentStatus);
         bill.setUpdatedAt(LocalDateTime.now());
 
-        if(paymentStatus.equals(PaymentStatusConstants.PAID)){
+        Integer paymentMethod = bill.getPaymentMethod();
+
+        if(paymentStatus.equals(PaymentStatusConstants.PAID) && paymentMethod.equals(PaymentMethodConstants.VNPAY)) {
             bill.setPaidAt(LocalDateTime.now());
             bill.setOderStatus((OrderStatusConstants.CONFIRMED));
+        }
+
+        if(paymentStatus.equals(PaymentStatusConstants.PAID) && paymentMethod.equals(PaymentMethodConstants.CASH_ON_DELIVERY)) {
+            bill.setPaidAt(LocalDateTime.now());
         }
 
         Bill updatedBill = billRepository.save(bill);
