@@ -12,6 +12,7 @@ public class ProductDto {
     private String categoriesId;
     private String name;
     private String description;
+    private double originalPrice;
     private double price;
     private int percentDiscount;
     private int quantity;

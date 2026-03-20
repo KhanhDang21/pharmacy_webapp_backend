@@ -26,6 +26,7 @@ public class ProductController {
             @RequestParam String categoriesId,
             @RequestParam String name,
             @RequestParam String description,
+            @RequestParam double originalPrice,
             @RequestParam double price,
             @RequestParam int percentDiscount,
             @RequestParam int quantity,
@@ -34,7 +35,7 @@ public class ProductController {
     ){
         try{
             ProductDto productDto = new ProductDto(
-                    manufacturerId, categoriesId, name, description,
+                    manufacturerId, categoriesId, name, description, originalPrice,
                     price, percentDiscount, quantity, purchaseCount
             );
 
@@ -89,6 +90,7 @@ public class ProductController {
             @RequestParam String categoriesId,
             @RequestParam String name,
             @RequestParam String description,
+            @RequestParam double originalPrice,
             @RequestParam double price,
             @RequestParam int percentDiscount,
             @RequestParam int quantity,
@@ -101,6 +103,7 @@ public class ProductController {
                     categoriesId,
                     name,
                     description,
+                    originalPrice,
                     price,
                     percentDiscount,
                     quantity,

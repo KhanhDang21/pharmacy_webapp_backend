@@ -46,6 +46,7 @@ public class ProductService {
         product.setCategories(categories);
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
+        product.setOriginalPrice(productDto.getOriginalPrice());
         product.setPrice(productDto.getPrice());
         product.setPercentDiscount(productDto.getPercentDiscount());
         product.setQuantity(productDto.getQuantity());
@@ -91,6 +92,7 @@ public class ProductService {
 
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
+        product.setOriginalPrice(productDto.getOriginalPrice());
         product.setPrice(productDto.getPrice());
         product.setPercentDiscount(productDto.getPercentDiscount());
         product.setQuantity(productDto.getQuantity());
