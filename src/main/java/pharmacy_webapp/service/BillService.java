@@ -45,17 +45,29 @@ public class BillService {
     @Autowired
     private VNPayService vnPayService;
 
-    private double caculateTotalAmount(HashMap<String, Integer> products){
+    @Autowired
+    private DiscountEventService discountEventService;
+
+    private double calculateTotalAmount(HashMap<String, Integer> products,
+                                        LocalDateTime purchaseTime) {
         double total = 0;
-        for(HashMap.Entry<String, Integer> entry : products.entrySet()){
+        for (HashMap.Entry<String, Integer> entry : products.entrySet()) {
             Product product = productService.getProductById(entry.getKey());
-            total += (((product.getPrice() * (100 - product.getPercentDiscount())) / 100) * entry.getValue());
+
+            int productDiscount = product.getPercentDiscount();
+            int eventDiscount = discountEventService
+                    .getBestEventDiscountPercent(product.getId(), purchaseTime);
+
+            double finalPrice = discountEventService
+                    .calculateFinalPrice(product.getPrice(), productDiscount, eventDiscount);
+
+            total += finalPrice * entry.getValue();
         }
         return total;
     }
 
     private Integer getInitialPaymentStatus(Integer paymentMethod) {
-        if (paymentMethod.equals(PaymentMethodConstants.CASH_ON_DELIVERY)) {
+        if(paymentMethod.equals(PaymentMethodConstants.CASH_ON_DELIVERY)) {
             return PaymentStatusConstants.PENDING;
         }
         return PaymentStatusConstants.PENDING;
@@ -156,7 +168,8 @@ public class BillService {
         HashMap<String, Integer> products = new HashMap<>(shoppingCart.getItems());
         validateProducts(products);
 
-        double totalAmount = caculateTotalAmount(products);
+        LocalDateTime purchaseTime = LocalDateTime.now();
+        double totalAmount = calculateTotalAmount(products, purchaseTime);
 
         Bill bill = new Bill();
         bill.setUser(user);
@@ -210,7 +223,8 @@ public class BillService {
 
         validateProducts(buyNowRequest.getProducts());
 
-        double totalAmount = caculateTotalAmount(buyNowRequest.getProducts());
+        LocalDateTime purchaseTime = LocalDateTime.now();
+        double totalAmount = calculateTotalAmount(buyNowRequest.getProducts(), purchaseTime);
 
         Bill bill = new Bill();
         bill.setUser(user);
