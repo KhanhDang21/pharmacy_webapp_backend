@@ -17,48 +17,56 @@ public class ShoppingCartService {
     @Autowired
     private UserService userService;
 
-    public ShoppingCart createShoppingCart(String userId){
+    public ShoppingCart createShoppingCart(String userId) {
         User user = userService.getUserById(userId);
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setUser(user);
         return shoppingCartRepository.save(shoppingCart);
     }
 
-    public ShoppingCart getShoppingCart(String userId){
+    public ShoppingCart getShoppingCart(String userId) {
         return shoppingCartRepository.getShoppingCartByUser_Id(userId);
     }
 
-    public ShoppingCart addProductToShoppingCart(String userId, String productId){
+    public ShoppingCart addProductToShoppingCart(String userId, String productId, Integer quantity) {
         ShoppingCart shoppingCart = getShoppingCart(userId);
 
-        if(shoppingCart == null){
+        if (shoppingCart == null) {
             throw new RuntimeException("Shopping cart is not created");
         }
 
-        shoppingCart.getItems().merge(productId, 1, Integer::sum);
+        if (productService.getProductById(productId) == null) {
+            throw new RuntimeException("Product is not exist");
+        }
+
+        shoppingCart.getItems().merge(productId, quantity, Integer::sum);
 
         return shoppingCartRepository.save(shoppingCart);
     }
 
-    public ShoppingCart decreaseProductFromShoppingCart(String userId, String productId){
+    public ShoppingCart decreaseProductFromShoppingCart(String userId, String productId, Integer quantity) {
         ShoppingCart shoppingCart = getShoppingCart(userId);
 
-        if(shoppingCart == null){
+        if (shoppingCart == null) {
             throw new RuntimeException("Shopping cart is not created");
         }
 
+        if (productService.getProductById(productId) == null) {
+            throw new RuntimeException("Product is not exist");
+        }
+
         shoppingCart.getItems().computeIfPresent(productId, (k, v) -> {
-            int newQuantity = v - 1;
+            int newQuantity = v - quantity;
             return newQuantity > 0 ? newQuantity : null;
         });
 
         return shoppingCartRepository.save(shoppingCart);
     }
 
-    public ShoppingCart removeProductFromShoppingCart(String userId, String productId){
+    public ShoppingCart removeProductFromShoppingCart(String userId, String productId) {
         ShoppingCart shoppingCart = getShoppingCart(userId);
 
-        if(shoppingCart == null){
+        if (shoppingCart == null) {
             throw new RuntimeException("Shopping cart is not created");
         }
 
@@ -69,7 +77,7 @@ public class ShoppingCartService {
     public ShoppingCart clearShoppingCart(String userId) {
         ShoppingCart shoppingCart = getShoppingCart(userId);
 
-        if(shoppingCart == null){
+        if (shoppingCart == null) {
             throw new RuntimeException("Shopping cart is not created");
         }
 

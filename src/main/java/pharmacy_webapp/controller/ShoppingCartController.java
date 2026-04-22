@@ -16,110 +16,102 @@ public class ShoppingCartController {
     private ShoppingCartService shoppingCartService;
 
     @PostMapping("/create-shopping-cart")
-    public ResponseEntity<ApiResponse<ShoppingCart>> createShoppingCart(Authentication authentication){
-        try{
+    public ResponseEntity<ApiResponse<ShoppingCart>> createShoppingCart(Authentication authentication) {
+        try {
             UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
             String userId = user.getUserId();
 
             ShoppingCart shoppingCart = shoppingCartService.createShoppingCart(userId);
 
             return ResponseEntity.ok(
-                    ApiResponse.success("Create shopping cart successfully", shoppingCart)
-            );
-        }catch (Exception e){
+                    ApiResponse.success("Create shopping cart successfully", shoppingCart));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    ApiResponse.error(e.getMessage())
-            );
+                    ApiResponse.error(e.getMessage()));
         }
     }
 
     @GetMapping("/get-shopping-cart")
-    public ResponseEntity<ApiResponse<ShoppingCart>> getShoppingCart(Authentication authentication){
-        try{
+    public ResponseEntity<ApiResponse<ShoppingCart>> getShoppingCart(Authentication authentication) {
+        try {
             UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
             String userId = user.getUserId();
 
             ShoppingCart shoppingCart = shoppingCartService.getShoppingCart(userId);
 
             return ResponseEntity.ok(
-                    ApiResponse.success("Get shopping cart successfully", shoppingCart)
-            );
-        }catch (Exception e){
+                    ApiResponse.success("Get shopping cart successfully", shoppingCart));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    ApiResponse.error(e.getMessage())
-            );
+                    ApiResponse.error(e.getMessage()));
         }
     }
 
-   @PutMapping("/add-product-to-shopping-cart")
-    public ResponseEntity<ApiResponse<ShoppingCart>> addProductToShoppingCart(Authentication authentication, String productId){
-        try{
+    @PutMapping("/add-product-to-shopping-cart")
+    public ResponseEntity<ApiResponse<ShoppingCart>> addProductToShoppingCart(Authentication authentication,
+            String productId, Integer quantity) {
+        try {
             UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
             String userId = user.getUserId();
 
-            ShoppingCart shoppingCart = shoppingCartService.addProductToShoppingCart(userId, productId);
+            ShoppingCart shoppingCart = shoppingCartService.addProductToShoppingCart(userId, productId, quantity);
 
             return ResponseEntity.ok(
-                    ApiResponse.success("Add product successfully", shoppingCart)
-            );
-        }catch (Exception e){
+                    ApiResponse.success("Add product successfully", shoppingCart));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    ApiResponse.error(e.getMessage())
-            );
+                    ApiResponse.error(e.getMessage()));
         }
-   }
+    }
 
-   @PutMapping("/decrease-product-from-shopping-cart")
-    public ResponseEntity<ApiResponse<ShoppingCart>> decreaseProductFromShoppingCart(Authentication authentication, String productId){
-        try{
+    @PutMapping("/decrease-product-from-shopping-cart")
+    public ResponseEntity<ApiResponse<ShoppingCart>> decreaseProductFromShoppingCart(Authentication authentication,
+            String productId, Integer quantity) {
+        try {
             UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
             String userId = user.getUserId();
 
-            ShoppingCart shoppingCart = shoppingCartService.decreaseProductFromShoppingCart(userId, productId);
+            ShoppingCart shoppingCart = shoppingCartService.decreaseProductFromShoppingCart(userId, productId,
+                    quantity);
 
             return ResponseEntity.ok(
-                    ApiResponse.success("Decrease product successfully", shoppingCart)
-            );
-        }catch (Exception e){
+                    ApiResponse.success("Decrease product successfully", shoppingCart));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    ApiResponse.error(e.getMessage())
-            );
+                    ApiResponse.error(e.getMessage()));
         }
-   }
+    }
 
-   @PutMapping("/remove-product-from-shopping-cart")
-    public ResponseEntity<ApiResponse<ShoppingCart>> removeProductFromShoppingCart(Authentication authentication, String productId){
-        try{
+    @PutMapping("/remove-product-from-shopping-cart")
+    public ResponseEntity<ApiResponse<ShoppingCart>> removeProductFromShoppingCart(Authentication authentication,
+            String productId) {
+        try {
             UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
             String userId = user.getUserId();
 
             ShoppingCart shoppingCart = shoppingCartService.removeProductFromShoppingCart(userId, productId);
 
             return ResponseEntity.ok(
-                    ApiResponse.success("Remove product successfully", shoppingCart)
-            );
-        }catch (Exception e){
+                    ApiResponse.success("Remove product successfully", shoppingCart));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    ApiResponse.error(e.getMessage())
-            );
+                    ApiResponse.error(e.getMessage()));
         }
-   }
+    }
 
-   @PutMapping("/clear-shopping-cart")
-    public ResponseEntity<ApiResponse<ShoppingCart>> clearShoppingCart(Authentication authentication){
-        try{
+    @PutMapping("/clear-shopping-cart")
+    public ResponseEntity<ApiResponse<ShoppingCart>> clearShoppingCart(Authentication authentication) {
+        try {
             UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
             String userId = user.getUserId();
 
             ShoppingCart shoppingCart = shoppingCartService.clearShoppingCart(userId);
 
             return ResponseEntity.ok(
-                    ApiResponse.success("Clear shopping cart successfully", shoppingCart)
-            );
-        }catch (Exception e){
+                    ApiResponse.success("Clear shopping cart successfully", shoppingCart));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                    ApiResponse.error(e.getMessage())
-            );
+                    ApiResponse.error(e.getMessage()));
         }
-   }
+    }
 }
